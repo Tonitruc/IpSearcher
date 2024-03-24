@@ -80,7 +80,7 @@ public class IpController {
     @DeleteMapping("/delete/{id}")
     public HttpStatus deleteServerTraffic(@PathVariable Long id) {
         Boolean isExist = ipService.deleteIpEntity(id);
-        if(isExist) {
+        if(Boolean.TRUE.equals(isExist)) {
             return HttpStatus.OK;
         } else {
             return HttpStatus.NOT_FOUND;

@@ -54,7 +54,7 @@ public class ServerTrafficController {
     @DeleteMapping("/delete/{id}")
     public HttpStatus deleteServerTraffic(@PathVariable Long id) {
         Boolean isExist = serverTrafficService.deleteServerTraffic(id);
-        if(isExist) {
+        if(Boolean.TRUE.equals(isExist)) {
             return HttpStatus.OK;
         } else {
             return HttpStatus.NOT_FOUND;
