@@ -13,7 +13,7 @@ import java.util.Set;
 @Setter
 @Getter
 @NoArgsConstructor
-@Table(name = "user_entity")
+@Table(name = "server_traffic_entity")
 public class ServerTraffic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,9 +21,9 @@ public class ServerTraffic {
 
     private String trafficName;
 
-    @OneToMany(mappedBy = "serverTraffic", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "serverTraffic", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonBackReference
-    Set<VPN> ipEntities= new HashSet<>();
+    Set<IpEntity> ipEntities = new HashSet<>();
 
     public ServerTraffic(String trafficName) {
         this.trafficName = trafficName;

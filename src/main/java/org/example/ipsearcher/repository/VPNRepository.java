@@ -1,8 +1,8 @@
 package org.example.ipsearcher.repository;
 
-import org.example.ipsearcher.model.VPN;
+import org.example.ipsearcher.model.Vpn;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface VPNRepository extends JpaRepository<VPN, Long> {
-    VPN findByName(String name);
+public interface VPNRepository extends JpaRepository<Vpn, Long> {
+    Vpn findByName(String name);
 }

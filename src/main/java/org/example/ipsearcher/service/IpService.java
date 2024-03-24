@@ -1,85 +1,142 @@
 package org.example.ipsearcher.service;
 
 import lombok.AllArgsConstructor;
-import org.example.ipsearcher.dto.IpResponse;
+import org.example.ipsearcher.dto.Request.IpEntityRequest;
+import org.example.ipsearcher.dto.Response.IpEntityResponse;
+import org.example.ipsearcher.dto.Response.IpResponse;
 import org.example.ipsearcher.model.IpEntity;
 import org.example.ipsearcher.model.ServerTraffic;
-import org.example.ipsearcher.model.VPN;
 import org.example.ipsearcher.repository.IpRepository;
-import org.example.ipsearcher.repository.UserRepository;
-import org.example.ipsearcher.repository.VPNRepository;
+import org.example.ipsearcher.repository.ServerTrafficRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class IpService {
-    private final IpRepository ipRepository;
-    private final VPNRepository vpnRepository;
-    private final UserRepository userRepository;
     private final RestTemplate restTemplate;
+    private final IpRepository ipRepository;
+    private final ServerTrafficRepository serverTrafficRepository;
+    private static final String IPADDRESS_PATTERN =
+            "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+                    + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+                    + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+                    + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
 
-    public IpResponse getIpInfo(String ip, String username, String vpnName) {
+    private static final Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
+
+    public boolean isValidIp(String ip) {
+        Matcher matcher = pattern.matcher(ip);
+        return matcher.matches();
+    }
+
+    public IpResponse getIpInfo(String ip) {
         if (!isValidIp(ip)) {
-            throw new IllegalArgumentException("Invalid IP address");
+            return null;
         }
-
         String baseUrl = "http://ip-api.com/json/";
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(ip);
-        IpResponse response = restTemplate.getForObject(builder.toUriString(), IpResponse.class);
-
-        IpEntity ipEntity = ipRepository.findByQuery(response.getQuery());
-        if (ipEntity == null) {
-            ipEntity = new IpEntity(response.getQuery(), response.getCountry(), response.getRegionName(), response.getCity());
-            ipEntity = ipRepository.save(ipEntity);
-        }
-
-        ServerTraffic user = userRepository.findByUsername(username);
-        if(user == null) {
-            user = new ServerTraffic(username, "Fuck@gmail.com");
-            user = userRepository.save(user);
-        }
-
-        Set<IpEntity> ips = new HashSet<>();
-        ips.add(ipEntity);
-        VPN vpnEntity = vpnRepository.findByName(vpnName);
-        if(vpnEntity == null) {
-            vpnEntity = new VPN(vpnName, user, ips);
-            vpnRepository.save(vpnEntity);
-        }
-        else {
-            vpnEntity.getIpEntities().add(ipEntity);
-            vpnRepository.save(vpnEntity);
-        }
-        return response;
+        return restTemplate.getForObject(builder.toUriString(), IpResponse.class);
     }
 
-    private boolean isValidIp(String ip) {
-        if (ip == null || ip.isEmpty()) {
+    public IpEntity getIpEntity(Long id) {
+        Optional<IpEntity> existIpEntity = ipRepository.findById(id);
+        return existIpEntity.orElse(null);
+    }
+
+    public List<IpEntityResponse> getAllIpEntity() {
+        return ipRepository.findAll().stream()
+                .map(entity -> new IpEntityResponse(entity.getQuery(), entity.getCountry(),
+                        entity.getRegionName(), entity.getCity(),
+                        entity.getServerTraffic() != null ? entity.getServerTraffic().getTrafficName() : null))
+                .collect(Collectors.toList());
+    }
+
+    public IpEntity addIpEntity(String ip) {
+        IpResponse response = getIpInfo(ip);
+        if(response == null) {
+            return null;
+        }
+        IpEntity existIpEntity = ipRepository.findByQuery(ip);
+        if(existIpEntity != null) {
+            return null;
+        }
+        IpEntity ipEntity = new IpEntity(response.getQuery(), response.getCountry(),
+                response.getRegionName(), response.getCity(), null);
+        return ipRepository.save(ipEntity);
+    }
+
+    public IpEntity addIpEntityWithExistTraffic(IpEntityRequest ipDTO) {
+        Optional<ServerTraffic> existServerTraffic = serverTrafficRepository.findById(ipDTO.getServerTrafficId());
+        if(existServerTraffic.isEmpty()) {
+            return null;
+        }
+        IpEntity existIpEntity = ipRepository.findByQuery(ipDTO.getQuery());
+        if(existIpEntity != null) {
+            return null;
+        }
+        IpResponse response = getIpInfo(ipDTO.getQuery());
+        if(response == null) {
+            return null;
+        }
+        IpEntity ipEntity = new IpEntity(response.getQuery(), response.getCountry(),
+                response.getRegionName(), response.getCity(), existServerTraffic.get());
+        return ipRepository.save(ipEntity);
+    }
+
+    public IpEntityResponse changeTraffic(Long ipEntityId, Long serverTrafficId) {
+        Optional<IpEntity> existIpEntity = ipRepository.findById(ipEntityId);
+        if(existIpEntity.isEmpty()) {
+            return null;
+        }
+        Optional<ServerTraffic> existServerTraffic = serverTrafficRepository.findById(serverTrafficId);
+        if(existServerTraffic.isEmpty()) {
+            return null;
+        }
+        existIpEntity.get().setServerTraffic(existServerTraffic.get());
+        ipRepository.save(existIpEntity.get());
+        String trafficName = existIpEntity.get().getServerTraffic() != null ? existIpEntity.get().getServerTraffic().getTrafficName() : null;
+        IpEntityResponse ipEntityResponse = new IpEntityResponse(existIpEntity.get().getQuery(), existIpEntity.get().getCountry(),
+        existIpEntity.get().getRegionName(), existIpEntity.get().getCity(), trafficName);
+        return ipEntityResponse;
+    }
+
+    public IpEntityResponse updateIpEntity(Long id, String ip) {
+        Optional<IpEntity> existIpEntity = ipRepository.findById(id);
+        if(existIpEntity.isEmpty()) {
+            return null;
+        }
+        IpResponse response = getIpInfo(ip);
+        if(response == null) {
+            return null;
+        }
+        IpEntity sameIpEntity = ipRepository.findByQuery(ip);
+        if(sameIpEntity != null)
+            return null;
+        IpEntity ipEntity = new IpEntity(response.getQuery(), response.getCountry(),
+                response.getRegionName(), response.getCity(), existIpEntity.get().getServerTraffic());
+        ipEntity.setId(id);
+        ipRepository.save(ipEntity);
+        String trafficName = ipEntity.getServerTraffic() != null ? ipEntity.getServerTraffic().getTrafficName() : null;
+        IpEntityResponse ipEntityResponse = new IpEntityResponse(ipEntity.getQuery(), ipEntity.getCountry(),
+                ipEntity.getRegionName(), ipEntity.getCity(), trafficName);
+        return ipEntityResponse;
+    }
+
+    public Boolean deleteIpEntity(Long id) {
+        Optional<IpEntity> existIpEntity = ipRepository.findById(id);
+        if(existIpEntity.isEmpty()) {
             return false;
         }
-
-        String[] parts = ip.split("\\.");
-        if (parts.length != 4) {
-            return false;
-        }
-
-        for (String part : parts) {
-            try {
-                int value = Integer.parseInt(part);
-                if (value < 0 || value > 255) {
-                    return false;
-                }
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        }
-
+        ipRepository.delete(existIpEntity.get());
         return true;
     }
 }

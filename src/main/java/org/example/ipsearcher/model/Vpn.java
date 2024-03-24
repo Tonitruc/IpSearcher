@@ -14,28 +14,22 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @Table(name = "vpn_entity")
-public class VPN {
+public class Vpn {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonManagedReference
-    private ServerTraffic user;
-
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(name = "vpn_ip_entity",
             joinColumns = @JoinColumn(name = "vpn_id"),
             inverseJoinColumns = @JoinColumn(name = "ip_entity_id"))
     @JsonManagedReference
     private Set<IpEntity> ipEntities = new HashSet<>();
 
-    public VPN(String name, ServerTraffic user, Set<IpEntity> ipEntities) {
+    public Vpn(String name, Set<IpEntity> ipEntities) {
         this.name = name;
-        this.user = user;
         this.ipEntities = ipEntities;
     }
 }
