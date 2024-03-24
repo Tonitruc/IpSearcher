@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -57,7 +56,7 @@ public class IpService {
                 .map(entity -> new IpEntityResponse(entity.getQuery(), entity.getCountry(),
                         entity.getRegionName(), entity.getCity(),
                         entity.getServerTraffic() != null ? entity.getServerTraffic().getTrafficName() : null))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public IpEntity addIpEntity(String ip) {
@@ -104,9 +103,8 @@ public class IpService {
         existIpEntity.get().setServerTraffic(existServerTraffic.get());
         ipRepository.save(existIpEntity.get());
         String trafficName = existIpEntity.get().getServerTraffic() != null ? existIpEntity.get().getServerTraffic().getTrafficName() : null;
-        IpEntityResponse ipEntityResponse = new IpEntityResponse(existIpEntity.get().getQuery(), existIpEntity.get().getCountry(),
-        existIpEntity.get().getRegionName(), existIpEntity.get().getCity(), trafficName);
-        return ipEntityResponse;
+        return  new IpEntityResponse(existIpEntity.get().getQuery(), existIpEntity.get().getCountry(),
+                existIpEntity.get().getRegionName(), existIpEntity.get().getCity(), trafficName);
     }
 
     public IpEntityResponse updateIpEntity(Long id, String ip) {
@@ -126,9 +124,8 @@ public class IpService {
         ipEntity.setId(id);
         ipRepository.save(ipEntity);
         String trafficName = ipEntity.getServerTraffic() != null ? ipEntity.getServerTraffic().getTrafficName() : null;
-        IpEntityResponse ipEntityResponse = new IpEntityResponse(ipEntity.getQuery(), ipEntity.getCountry(),
+        return new IpEntityResponse(ipEntity.getQuery(), ipEntity.getCountry(),
                 ipEntity.getRegionName(), ipEntity.getCity(), trafficName);
-        return ipEntityResponse;
     }
 
     public Boolean deleteIpEntity(Long id) {

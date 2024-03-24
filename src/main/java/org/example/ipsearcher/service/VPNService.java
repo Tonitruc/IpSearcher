@@ -23,21 +23,15 @@ public class VPNService {
 
     public VpnResponse getVPNById(@PathVariable Long id) {
         Optional<Vpn> existVPN = vpnRepository.findById(id);
-        if(existVPN.isEmpty()) {
-            return null;
-        }
-        VpnResponse vpnResponse = new VpnResponse(existVPN.get().getName(), existVPN.get().getIpEntities().stream()
-                .map(ipe -> new String(ipe.getQuery()))
-                .collect(Collectors.toList()));
-        return vpnResponse;
+        return existVPN.map(vpn -> new VpnResponse(vpn.getName(), vpn.getIpEntities().stream()
+                .map(IpEntity::getQuery)
+                .collect(Collectors.toList()))).orElse(null);
     }
 
     public List<VpnResponse> findAllVPN() {
         List<Vpn> vpns = vpnRepository.findAll();
-        List<VpnResponse> vpnRespons = vpns.stream()
-                .map(vpn -> new VpnResponse(vpn.getName(), vpn.getIpEntities().stream().map(ipe -> new String(ipe.getQuery()))
-                                .collect(Collectors.toList()))).collect(Collectors.toList());
-        return vpnRespons;
+        return  vpns.stream().map(vpn -> new VpnResponse(vpn.getName(), vpn.getIpEntities().stream().map(IpEntity::getQuery)
+                        .collect(Collectors.toList()))).collect(Collectors.toList());
     }
 
     public VpnResponse addVPNWithExistIp(VpnRequest vpnDTO) {
@@ -58,7 +52,7 @@ public class VPNService {
         Vpn vpn =  new Vpn(vpnDTO.getName(), ipEntities);
         vpnRepository.save(vpn);
         return new VpnResponse(vpn.getName(), vpn.getIpEntities().stream()
-                .map(ipe -> new String(ipe.getQuery()))
+                .map(IpEntity::getQuery)
                 .collect(Collectors.toList()));
     }
 
@@ -78,7 +72,7 @@ public class VPNService {
         existVpn.get().getIpEntities().add(ipEntity);
         vpnRepository.save(existVpn.get());
         return new VpnResponse(existVpn.get().getName(), existVpn.get().getIpEntities().stream()
-                .map(ipe -> new String(ipe.getQuery()))
+                .map(IpEntity::getQuery)
                 .collect(Collectors.toList()));
     }
 
@@ -95,7 +89,7 @@ public class VPNService {
         existVpn.get().getIpEntities().remove(ipEntity);
         vpnRepository.save(existVpn.get());
         return new VpnResponse(existVpn.get().getName(), existVpn.get().getIpEntities().stream()
-                .map(ipe -> new String(ipe.getQuery()))
+                .map(IpEntity::getQuery)
                 .collect(Collectors.toList()));
     }
 
