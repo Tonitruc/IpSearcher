@@ -1,8 +1,10 @@
-package org.example.ipsearcher.dto.response;
+package org.example.ipsearcher.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class IpResponse {
     private String query;
     private String country;
