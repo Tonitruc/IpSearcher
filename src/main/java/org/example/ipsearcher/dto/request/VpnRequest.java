@@ -1,4 +1,4 @@
-package org.example.ipsearcher.dto.Request;
+package org.example.ipsearcher.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

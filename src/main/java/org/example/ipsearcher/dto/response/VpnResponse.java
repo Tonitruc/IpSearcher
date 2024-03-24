@@ -1,4 +1,4 @@
-package org.example.ipsearcher.dto.Response;
+package org.example.ipsearcher.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

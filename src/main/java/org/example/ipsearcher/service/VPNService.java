@@ -1,9 +1,9 @@
 package org.example.ipsearcher.service;
 
 import lombok.AllArgsConstructor;
-import org.example.ipsearcher.dto.Request.VpnRequest;
-import org.example.ipsearcher.dto.Response.IpResponse;
-import org.example.ipsearcher.dto.Response.VpnResponse;
+import org.example.ipsearcher.dto.request.VpnRequest;
+import org.example.ipsearcher.dto.response.IpResponse;
+import org.example.ipsearcher.dto.response.VpnResponse;
 import org.example.ipsearcher.model.IpEntity;
 import org.example.ipsearcher.model.Vpn;
 import org.example.ipsearcher.repository.IpRepository;

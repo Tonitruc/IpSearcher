@@ -1,8 +1,8 @@
 package org.example.ipsearcher.controller;
 
 import lombok.AllArgsConstructor;
-import org.example.ipsearcher.dto.Request.VpnRequest;
-import org.example.ipsearcher.dto.Response.VpnResponse;
+import org.example.ipsearcher.dto.request.VpnRequest;
+import org.example.ipsearcher.dto.response.VpnResponse;
 import org.example.ipsearcher.service.VPNService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

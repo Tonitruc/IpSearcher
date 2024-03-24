@@ -1,7 +1,7 @@
 package org.example.ipsearcher.service;
 
 import lombok.AllArgsConstructor;
-import org.example.ipsearcher.dto.Request.ServerTrafficRequest;
+import org.example.ipsearcher.dto.request.ServerTrafficRequest;
 import org.example.ipsearcher.model.ServerTraffic;
 import org.example.ipsearcher.repository.ServerTrafficRepository;
 import org.springframework.stereotype.Service;

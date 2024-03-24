@@ -1,8 +1,8 @@
 package org.example.ipsearcher.controller;
 
 import lombok.AllArgsConstructor;
-import org.example.ipsearcher.dto.Request.IpEntityRequest;
-import org.example.ipsearcher.dto.Response.IpEntityResponse;
+import org.example.ipsearcher.dto.request.IpEntityRequest;
+import org.example.ipsearcher.dto.response.IpEntityResponse;
 import org.example.ipsearcher.model.IpEntity;
 import org.example.ipsearcher.service.IpService;
 import org.springframework.http.HttpStatus;
