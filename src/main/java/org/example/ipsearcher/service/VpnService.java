@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class VPNService {
+public class VpnService {
     private final VPNRepository vpnRepository;
     private final IpRepository ipRepository;
     private final IpService ipService;
@@ -31,7 +31,7 @@ public class VPNService {
     public List<VpnResponse> findAllVPN() {
         List<Vpn> vpns = vpnRepository.findAll();
         return  vpns.stream().map(vpn -> new VpnResponse(vpn.getName(), vpn.getIpEntities().stream().map(IpEntity::getQuery)
-                        .collect(Collectors.toList()))).collect(Collectors.toList());
+                        .collect(Collectors.toList()))).toList();
     }
 
     public VpnResponse addVPNWithExistIp(VpnRequest vpnDTO) {

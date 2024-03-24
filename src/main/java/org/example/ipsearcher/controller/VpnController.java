@@ -3,7 +3,7 @@ package org.example.ipsearcher.controller;
 import lombok.AllArgsConstructor;
 import org.example.ipsearcher.dto.request.VpnRequest;
 import org.example.ipsearcher.dto.response.VpnResponse;
-import org.example.ipsearcher.service.VPNService;
+import org.example.ipsearcher.service.VpnService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,8 +13,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/vpn")
 @AllArgsConstructor
-public class VPNController {
-    private final VPNService vpnService;
+public class VpnController {
+    private final VpnService vpnService;
 
     @GetMapping("/get/{id}")
     public ResponseEntity<VpnResponse> getIpEntity(@PathVariable Long id) {
