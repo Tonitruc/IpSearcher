@@ -24,10 +24,7 @@ public class IpService {
     private final IpRepository ipRepository;
     private final ServerTrafficRepository serverTrafficRepository;
     private static final String IPADDRESS_PATTERN =
-            "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
-                    + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
-                    + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
-                    + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
+            "^(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)(\\.(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)){3}$";
 
     private static final Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
 
