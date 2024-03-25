@@ -7,6 +7,10 @@
 - Spring Data Jpa
 - PostgreSQL
 
+## Структура базы данных 
+
+![image](https://github.com/Tonitruc/IpSearcher/assets/139448882/9d962458-c9fc-41de-958c-d73b245ebb9a)
+
 ## Описание
 
 Сервис должен принимать IP-адрес и возвращать информацию о его местоположении
