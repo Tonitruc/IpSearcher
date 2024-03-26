@@ -25,7 +25,6 @@ public class Vpn {
     @JoinTable(name = "vpn_ip_entity",
             joinColumns = @JoinColumn(name = "vpn_id"),
             inverseJoinColumns = @JoinColumn(name = "ip_entity_id"))
-    @JsonManagedReference
     private Set<IpEntity> ipEntities = new HashSet<>();
 
     public Vpn(String name, Set<IpEntity> ipEntities) {
