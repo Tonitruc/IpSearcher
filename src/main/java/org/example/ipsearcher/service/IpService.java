@@ -6,8 +6,10 @@ import org.example.ipsearcher.dto.response.IpEntityResponse;
 import org.example.ipsearcher.dto.response.IpResponse;
 import org.example.ipsearcher.model.IpEntity;
 import org.example.ipsearcher.model.ServerTraffic;
+import org.example.ipsearcher.model.Vpn;
 import org.example.ipsearcher.repository.IpRepository;
 import org.example.ipsearcher.repository.ServerTrafficRepository;
+import org.example.ipsearcher.repository.VpnRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -23,6 +25,7 @@ public class IpService {
     private final RestTemplate restTemplate;
     private final IpRepository ipRepository;
     private final ServerTrafficRepository serverTrafficRepository;
+    private final VpnRepository vpnRepository;
     private static final String IPADDRESS_PATTERN =
             "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)(\\.(?!$)|$)){4}$";
 
@@ -130,6 +133,13 @@ public class IpService {
         if(existIpEntity.isEmpty()) {
             return false;
         }
+        List<Vpn> vpns = vpnRepository.findAll();
+        for(Vpn vpn : vpns) {
+            if(vpn.getIpEntities().contains(existIpEntity.get())) {
+                vpn.getIpEntities().remove(existIpEntity.get());
+            }
+        }
+
         ipRepository.delete(existIpEntity.get());
         return true;
     }

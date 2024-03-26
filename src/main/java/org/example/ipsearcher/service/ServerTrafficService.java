@@ -2,7 +2,9 @@ package org.example.ipsearcher.service;
 
 import lombok.AllArgsConstructor;
 import org.example.ipsearcher.dto.request.ServerTrafficRequest;
+import org.example.ipsearcher.model.IpEntity;
 import org.example.ipsearcher.model.ServerTraffic;
+import org.example.ipsearcher.repository.IpRepository;
 import org.example.ipsearcher.repository.ServerTrafficRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +16,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ServerTrafficService {
     private final ServerTrafficRepository serverTrafficRepository;
+    private final IpRepository ipRepository;
 
     public ServerTraffic getServerTraffic(Long id) {
         Optional<ServerTraffic> existServerTraffic = serverTrafficRepository.findById(id);
@@ -53,6 +56,13 @@ public class ServerTrafficService {
         if(existServerTraffic.isEmpty()) {
             return false;
         }
+        List<IpEntity> ipEntities = ipRepository.findAll();
+        for(IpEntity ipEntity : ipEntities) {
+            if(ipEntity.getServerTraffic() != null && ipEntity.getServerTraffic().equals(existServerTraffic.get())) {
+                ipEntity.setServerTraffic(null);
+            }
+        }
+
         serverTrafficRepository.delete(existServerTraffic.get());
         return true;
     }

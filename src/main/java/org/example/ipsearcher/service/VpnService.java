@@ -7,7 +7,7 @@ import org.example.ipsearcher.dto.response.VpnResponse;
 import org.example.ipsearcher.model.IpEntity;
 import org.example.ipsearcher.model.Vpn;
 import org.example.ipsearcher.repository.IpRepository;
-import org.example.ipsearcher.repository.VPNRepository;
+import org.example.ipsearcher.repository.VpnRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class VpnService {
-    private final VPNRepository vpnRepository;
+    private final VpnRepository vpnRepository;
     private final IpRepository ipRepository;
     private final IpService ipService;
 
@@ -98,6 +98,7 @@ public class VpnService {
         if(isExist.isEmpty()) {
             return false;
         }
+
         vpnRepository.delete(isExist.get());
         return true;
     }
